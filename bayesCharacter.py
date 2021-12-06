@@ -1,10 +1,11 @@
 import csv
-#import pandas as csv 
+from Bayesian-Character-analysis import alphaCharClass
+#import pandas as csv
 ###################################
 # CS 470: Artifical Intelligence  				  #
 # Author Jake Stuck
 # License: MIT License 2021(C)
-# Jake Stuck- All Rights reserved  		
+# Jake Stuck- All Rights reserved
 ###################################
 
 initialTraDat = "LetterRecognitioninitTrainingSet.txt"
@@ -12,18 +13,21 @@ moreTraDat = "optdigitsTrain.txt"
 matureDat = "opticalDigitsTest.txt"
 holisticList = []
 
-## initially training the classifier using three lists to 
-## recognize three sets of letters. 
-Alist = [] 
+## initially training the classifier using three lists to
+## recognize three sets of letters.
+Alist = []
 Blist = []
-Clist = [] 
+Clist = []
 
-testFlg = True 
+testFlg = True
 
-#Calls in all supporting functions 
+#Calls in all supporting functions
 def main():
 	holisticList = loadInVectors(initialTraDat)
-	organizeInitSets(holisticList)
+
+	alphaObj = alphaCharClass(holisticList, initialTraDat)
+	#organizeAlphaSets(holisticList, Alist, Blist, Clist)
+
 #
 #
 #
@@ -32,28 +36,19 @@ def loadInVectors(fileN):
 		delim = csv.reader(csvfile, delimiter=',', quotechar='|')
 		for row in delim:
 			if testFlg == True:
-				print(",".join(row))		
+				print(",".join(row))
 			holisticList = ",".join(row)
 	return holisticList
 
-def organizeInitSets(holisticList, Alist, Blist, Clist):
 
+
+def averageLikeRows(inList):
 	if testFlg == True:
-		print(holisticList)
+		print(inList)
 
-	for char in holisticList:
-		if char == "A":
-			# should grab its index and the 18 following
-			Alist = holisticList[char:18]
-		if char == "B":
-			Blist = holisticList[char:18]
-		if char == "C":
-			Clist = holisticList[char:18]
-def averageLikeRows():
-	pass
 
 def naiveBayes():
-	pass 
+	pass
 
 
 
