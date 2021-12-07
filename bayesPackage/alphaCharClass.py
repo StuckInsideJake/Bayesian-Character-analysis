@@ -1,4 +1,4 @@
-import pandas as csv
+import pandas
 class alphaCharClass:
 
 	# member variables
@@ -14,6 +14,6 @@ class alphaCharClass:
 
 	def organizeAlphaSets(holisticList, alphaCharSetFil):
 
-		table_obj = read_table(alphaCharSetFil, delimiter = ",")
+		table_obj = pandas.read_table(alphaCharSetFil, delimiter = ",")
 
 		return table_obj

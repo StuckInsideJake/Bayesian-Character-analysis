@@ -1,5 +1,6 @@
 import csv
-from Bayesian-Character-analysis import alphaCharClass
+from bayesPackage.alphaCharClass import *
+
 #import pandas as csv
 ###################################
 # CS 470: Artifical Intelligence  				  #
@@ -13,19 +14,28 @@ moreTraDat = "optdigitsTrain.txt"
 matureDat = "opticalDigitsTest.txt"
 holisticList = []
 
-## initially training the classifier using three lists to
-## recognize three sets of letters.
-Alist = []
-Blist = []
-Clist = []
 
-testFlg = True
+
+testFlg = False
 
 #Calls in all supporting functions
 def main():
-	holisticList = loadInVectors(initialTraDat)
 
+	holisticList = loadInVectors(initialTraDat)
 	alphaObj = alphaCharClass(holisticList, initialTraDat)
+	alphaList = alphaObj.holisticAlphalList
+
+	alphaFil = alphaObj.alphaCharSetFil
+	alphaFrame = alphaObj.organizeAlphaSets( alphaFil )
+
+	# Reference point for what exactly does a non numeric character look like?
+	alphaAgg = alphaFrame.agg
+
+	# This dataframe holds the average of each 
+	alphaAvg = alphaFrame.mean(axis=1)
+
+	print(alphaAvg)
+
 	#organizeAlphaSets(holisticList, Alist, Blist, Clist)
 
 #
@@ -41,16 +51,15 @@ def loadInVectors(fileN):
 	return holisticList
 
 
-
 def averageLikeRows(inList):
 	if testFlg == True:
 		print(inList)
 
-
-def naiveBayes():
+#
+#
+#
+def naiveBayes(dframe):
 	pass
-
-
 
 
 
