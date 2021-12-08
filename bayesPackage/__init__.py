@@ -7,7 +7,7 @@ from bayesPackage.alphaCharClass import *
 # Author Jake Stuck
 # License: MIT License 2021(C)
 # Jake Stuck- All Rights reserved
-###################################
+################################   ###
 
 initialTraDat = "LetterRecognitioninitTrainingSet.txt"
 moreTraDat = "optdigitsTrain.txt"
@@ -31,7 +31,7 @@ def main():
 	# Reference point for what exactly does a non numeric character look like?
 	alphaAgg = alphaFrame.agg
 
-	# This dataframe holds the average of each 
+	# This dataframe holds the average of each
 	alphaAvg = alphaFrame.mean(axis=1)
 
 	print(alphaAvg)
