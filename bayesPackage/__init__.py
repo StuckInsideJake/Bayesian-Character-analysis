@@ -25,6 +25,12 @@ holisticList = []
 testFlg = True
 
 
+# faking a pointer that I can access at the global level
+# assigning the value one so I can override its place in memory
+# the value one is also in place for multiplication protection
+priorPointer = [1]
+
+
 
 ###############################################################
 
@@ -50,41 +56,32 @@ def main():
 		print("\n___________________________________")
 		print("\n Converting text data into a dataframe")
 		print("\n___________________________________")
-
 	## Alpha char set
 	alphaObj = alphaCharClass(holisticAList, initialTraDat)
 	alphaList = alphaObj.holisticAlphalList
 	alphaFil = alphaObj.alphaCharSetFil
 	alphaFrame = alphaObj.organizeAlphaSets( alphaFil )
-
 	## Training set
 	numericTObj = numericCharClass(holisticNList, moreTraDat, isTraining )
 	numericTList = numericTObj.holisticNList
 	numericTFil = numericTObj.numCharSetFil
 	numericTFrame = numericTObj.organizeNumSets(numericTFil)
-
 	## refined set
 	numericRObj = numericCharClass(holisticNList, matureDat, isTraining)
 	numericRList = numericRObj.holisticNList
 	numericRFil = numericRObj.numCharSetFil
 	numericRFrame = numericRObj.organizeNumSets(numericRFil)
-
 	## Calling the classifier with numeric data
-
 	# Train numeric call
 	naiveBayes(numericTFrame, isTraining, alphaSetFlg, numericTObj)
 	# Refined numeric call
 	isTraining = False
 	naiveBayes(numericRFrame, isTraining, alphaSetFlg, numericRObj)
-
 	## Reset to true to avoid any scope issues
 	isTraining = True
-
 	#rescope to true prior to feeding alpha data into the classifier
 	alphaSetFlg = True
-
 	## feed alpha data into classifier
-
 	#Train call
 	isAlphaChar = True
 	naiveBayes(alphaFrame, isTraining, isAlphaChar, alphaObj)
@@ -126,7 +123,6 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 	meanArr = []
 	stdArr = []
 	dataList = []
-
 
 	# Splice random half of the dataset
 	# If it is not a training set only return 20
@@ -201,6 +197,7 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 			print(covariant)
 			print("\n_________________________________")
 		print("\n_________________")
+
 		## Now that both the covariant and mean value have been computed
 		## it is finally time to compute the gaussian distribution
 		gaussVal = random.gauss(meanArr, covariant)
@@ -215,17 +212,21 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 		# Now that we have gaussian values that can be compared to the "Class" data
 		# using the bayesian formula we can compute probabilities.
 
+		# if it is not an alpha character
+		# then use numericCharClass Obj var
 		if isAlphaChar != True:
 			return 5
 
 
 		# Class 'class' data
 		classD = datasetObj.alphaBayesClass
+
 		for key, value in classD.items():
 			value = classD[key]
 			print("\n_________________________-")
 			print("\ncalling bayesian probability function")
 			print("\n________________________")
+
 			probability[key] = determineP(value, gaussVal)
 
 			# Class 'class' data
@@ -234,41 +235,39 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 
 		# end of master loop
 		index+=1
+
 # Method:determineP
 # Process: determines probability via the bayesian formula
+# since one aspect of that formula is the prior class probability
 # Returns calculated probability in a dictionary
 def determineP(classD,data):
 
-	testFlg = False
+	likelyhood = classD * data
+	postProb = priorPointer
+
+	probability = likelyhood / classD
+	postProb[0] = probability
+
+	# ensuring that my "pointer" works
+	assert priorPointer[0] == probability
+
+	#Calculating the probability!
+	bayesPosteriorProb = (classD * priorPointer[0])/ classD
+
 	if testFlg == True:
-		print("\n--------------------------")
-		print("\nVerifying data integrity")
-		print(classD)
-		print(data)
-		print("\n-______________________")
-	#probabilityOfOccurrence = class
+		print("\n____________________________")
+		print("\nDisplaying posterior prob value")
+		print(bayesPosteriorProb)
+		print("\n__________________________________")
+
+	return bayesPosteriorProb
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Method: dispProbTable
+# Process: helper function for
+def dispProbTable():
+	pass
 
 # Method:  PrintInitDataSet
 # Process: Gets the aggeragate and mean of each row
