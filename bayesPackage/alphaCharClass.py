@@ -51,7 +51,7 @@ class alphaCharClass:
 		for key, values in dictionary.items():
 			tempDict[key] = self.calcListMean(values)
 
-		localSw = False
+		localSw = True
 		if localSw == True:
 			print("\n________________________")
 			print("\n Displaying mean dict values")
@@ -76,7 +76,7 @@ class alphaCharClass:
 	def organizeClassData(self):
 
 		localSw = self.testFlag
-		localSw = False
+		localSw = True
 		# Convert to dict
 		dfDictl = self.alphaDataframe.to_dict("split")
 		# Convert to list of lists using key

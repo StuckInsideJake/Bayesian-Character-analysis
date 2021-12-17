@@ -5,11 +5,12 @@ import csv
 from random import randint
 import numpy as np
 
+
 #import pandas as csv
 ###################################
 # CS 470: Artifical Intelligence
 # Author Jake Stuck
-# License: MIT License 2021
+#
 ################################
 
 
@@ -29,6 +30,9 @@ testFlg = True
 # assigning the value one so I can override its place in memory
 # the value one is also in place for multiplication protection
 priorPointer = [1]
+
+# using this one in the evaluation "Critic" function of my network
+lastPosteriorVal = [1]
 
 
 
@@ -62,14 +66,14 @@ def main():
 	alphaFil = alphaObj.alphaCharSetFil
 	alphaFrame = alphaObj.organizeAlphaSets( alphaFil )
 	## Training set
-	numericTObj = numericCharClass(holisticNList, moreTraDat, isTraining )
-	numericTList = numericTObj.holisticNList
-	numericTFil = numericTObj.numCharSetFil
+	numericTObj = numericCharClass(holisticNList, moreTraDat)
+	numericTList = numericTObj.holisticNlList
+	numericTFil = numericTObj.numericCharSetFil
 	numericTFrame = numericTObj.organizeNumSets(numericTFil)
 	## refined set
-	numericRObj = numericCharClass(holisticNList, matureDat, isTraining)
-	numericRList = numericRObj.holisticNList
-	numericRFil = numericRObj.numCharSetFil
+	numericRObj = numericCharClass(holisticNList, matureDat)
+	numericRList = numericRObj.holisticNlList
+	numericRFil = numericRObj.numericCharSetFil
 	numericRFrame = numericRObj.organizeNumSets(numericRFil)
 	## Calling the classifier with numeric data
 	# Train numeric call
@@ -88,6 +92,7 @@ def main():
 
 	isTraining = False
 	#Refined call
+	naiveBayes(alphaFrame, isTraining, isAlphaChar, alphaObj)
 
 	naiveBayes(alphaFrame, isTraining, isAlphaChar, alphaObj)
 
@@ -123,13 +128,13 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 	meanArr = []
 	stdArr = []
 	dataList = []
+	testFlag = True
 
 	# Splice random half of the dataset
 	# If it is not a training set only return 20
 	# rows to feed into classifier
 	splicedData = selectRandomSec(dframe, isTraining)
-	if testFlg == True:
-		print("dataframe has been spliced")
+	print("dataframe has been spliced")
 	# Convert pandas dataframe to numpy array for
 	# easier caclulation of covariance and Gaussian Multivariate
 	print("\n____________________________________")
@@ -142,8 +147,7 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 	# If it is not a training set only return 20
 	# rows to feed into classifier
 	splicedData = selectRandomSec(dframe, isTraining)
-	if testFlg == True:
-		print("dataframe has been spliced")
+	print("dataframe has been spliced")
 	# Convert pandas dataframe to numpy array for
 	# easier caclulation of covariance and Gaussian Multivariate
 	print("\n____________________________________")
@@ -170,32 +174,29 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 		# to start with.
 		if isTraining == True:
 			meanArr = np.mean(dataList)
-			if testFlg == True:
-				print("\n_________________________")
-				print("\ndisplaying mean arr:")
-				print(meanArr)
-				print("\n_________________________")
+			print("\n_________________________")
+			print("\ndisplaying mean arr:")
+			print(meanArr)
+			print("\n_________________________")
 
 		# otherwise use standard deviation
 		else:
 			meanArr = np.std(dataList)
 
 		# test output
-		if testFlg == True:
-			print("\n_________________________________")
-			print("\n Displaying mean values:")
-			print(meanArr)
-			print("\n_________________________________")
+		print("\n_________________________________")
+		print("\n Displaying mean values:")
+		print(meanArr)
+		print("\n_________________________________")
 
 		# Calculate covariance
 		covariant = np.cov(dataList.astype(float))
 
 		#test output
-		if testFlg == True:
-			print("\n_________________________________")
-			print("\n Displaying covariant value")
-			print(covariant)
-			print("\n_________________________________")
+		print("\n_________________________________")
+		print("\n Displaying covariant value")
+		print(covariant)
+		print("\n_________________________________")
 		print("\n_________________")
 
 		## Now that both the covariant and mean value have been computed
@@ -203,11 +204,11 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 		gaussVal = random.gauss(meanArr, covariant)
 
 		#test output
-		if testFlg == True:
-			print("\n_________________________________")
-			print("\nDisplaying Gaussian Value:")
-			print(gaussVal)
-			print("\n_________________________________")
+
+		print("\n_________________________________")
+		print("\nDisplaying Gaussian Value:")
+		print(gaussVal)
+		print("\n_________________________________")
 
 		# Now that we have gaussian values that can be compared to the "Class" data
 		# using the bayesian formula we can compute probabilities.
@@ -215,59 +216,93 @@ def naiveBayes(dframe, isTraining, isAlphaChar, datasetObj):
 		# if it is not an alpha character
 		# then use numericCharClass Obj var
 		if isAlphaChar != True:
-			return 5
+			print("\n Running probability calculations on numeric dataset")
+			classD = datasetObj.numericBayesClass
 
+			for key, value in classD.items():
+				value = classD[key]
+				print("\n_________________________-")
+				print("\ncalling bayesian probability function")
+				print("\n________________________")
+				probability[key] = determineP(value, gaussVal, key, False)
 
-		# Class 'class' data
-		classD = datasetObj.alphaBayesClass
+				print("\n Printing probability value")
+				print("\n___________________________")
+				print(probability[key])
+				print("\n___________________________")
 
-		for key, value in classD.items():
-			value = classD[key]
-			print("\n_________________________-")
-			print("\ncalling bayesian probability function")
-			print("\n________________________")
-
-			probability[key] = determineP(value, gaussVal)
-
+		if isAlphaChar == True:
 			# Class 'class' data
+			classD = datasetObj.alphaBayesClass
+			testFlg = True
 
-			#return probability
+			for key, value in classD.items():
+				value = classD[key]
 
+				if testFlag == True:
+					print("\n_________________________-")
+					print("\ncalling bayesian probability function")
+					print("\n________________________")
+
+				probability[key] = determineP(value, gaussVal, key, False)
+				if testFlag == True:
+					print("\n Printing probability value")
+					print("\n___________________________")
+					print(probability[key])
+					print("\n___________________________")
 		# end of master loop
 		index+=1
 
 # Method:determineP
 # Process: determines probability via the bayesian formula
 # since one aspect of that formula is the prior class probability
-# Returns calculated probability in a dictionary
-def determineP(classD,data):
+# Returns calculated probability as an integer
+def determineP(classD,data, key, rerunFlag):
 
-	likelyhood = classD * data
-	postProb = priorPointer
 
-	probability = likelyhood / classD
-	postProb[0] = probability
+	if rerunFlag == False:
+		likelyhood = classD * data
+		postProb = priorPointer
+		probability = likelyhood / classD
+		postProb[0] = probability
+		priorVal = priorPointer[0]
+		# ensuring that my "pointer" works
+		assert priorPointer[0] == probability
+		# Calculating the probability!
+		bayesPosteriorProb = (classD * priorPointer[0]) / classD
+		if testFlg == True:
+			print("\n____________________________")
+			print("\nDisplaying posterior prob value")
+			print(bayesPosteriorProb)
+			print("\n__________________________________")
+		dispProbTable(priorVal, bayesPosteriorProb, classD, key)
+		return bayesPosteriorProb
 
-	# ensuring that my "pointer" works
-	assert priorPointer[0] == probability
 
-	#Calculating the probability!
-	bayesPosteriorProb = (classD * priorPointer[0])/ classD
 
-	if testFlg == True:
-		print("\n____________________________")
-		print("\nDisplaying posterior prob value")
-		print(bayesPosteriorProb)
-		print("\n__________________________________")
-
-	return bayesPosteriorProb
-
+# Method: rerunCalc
+# Process: Helper function that reruns bayes formula
+# Returns new probability
+def rerunCalc(priorProb, data, classD):
+	return (priorProb * data)/ priorProb
 
 
 # Method: dispProbTable
 # Process: helper function for
-def dispProbTable():
-	pass
+# naiveBayes which displays the match class data vs
+# Returns: None, printed comparison betweeen predicted value and actual one
+def dispProbTable(postProb, probability, classD, key):
+
+	print("\n Displaying all probabilities greater than 10%")
+	print("\n___________________________________________________")
+	print("\n########################################################")
+	print("\n********************************************************")
+	print("The Probability that {} and {} are the same is {}: ".format(key, classD, probability))
+	print("The prior probability is: {}".format(postProb))
+	print("\n########################################################")
+	print("\n********************************************************")
+
+
 
 # Method:  PrintInitDataSet
 # Process: Gets the aggeragate and mean of each row
